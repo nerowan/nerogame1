@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>青少年自媒体UP主模拟（进阶版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* 基础重置 */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: #fafafa;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .step-title {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    p {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    .hidden {
+      display: none;
+    }
+    /* 简易按钮样式 */
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin: 5px 0;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      background-color: #3b82f6;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .btn:hover {
+      background-color: #2563eb;
+    }
+    /* 选项按钮，以区分度较高的绿颜色 */
+    .option-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+      background-color: #4ade80;
+    }
+    .option-btn:hover {
+      background-color: #22c55e;
+    }
+    /* 底部对齐按钮容器 */
+    .bottom-btns {
+      text-align: center;
+      margin-top: 20px;
+    }
+    /* 卡片样式容器 */
+    .message-box {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    /* 进度条 */
+    .progress-bar {
+      background-color: #ddd;
+      border-radius: 4px;
+      height: 10px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress {
+      height: 100%;
+      background-color: #3b82f6;
+      width: 0%;
+      transition: width 0.5s;
+    }
+    /* 反馈区，用于显示随机事件或提示 */
+    .feedback-area {
+      background-color: #fef9c3; /* 轻微的浅黄色 */
+      border: 1px dashed #facc15;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #7a6225;
+      display: none;
+    }
+    .feedback-area.active {
+      display: block;
+    }
+    /* 自定义属性展示区 */
+    .stats-box {
+      background-color: #f1f5f9;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      line-height: 1.8;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>青少年自媒体UP主模拟游戏</h1>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- 属性展示 -->
+    <div class="stats-box" id="statsBox">
+      <strong>内容质量(Quality)</strong>：<span id="statQuality">0</span><br>
+      <strong>粉丝支持(Fan Support)</strong>：<span id="statFan">0</span><br>
+      <strong>算法偏爱(Algorithm Favor)</strong>：<span id="statAlgo">0</span><br>
+      <strong>自我压力(Stress)</strong>：<span id="statStress">0</span><br>
+      <strong>投入时间(Time Cost)</strong>：<span id="statTime">0</span><br>
+    </div>
+
+    <!-- 随机事件/反馈信息区 -->
+    <div class="feedback-area" id="feedbackArea"></div>
+
+    <!-- 步骤1：选择频道名称 -->
+    <div id="step1" class="message-box">
+      <h2>Step 1：创建你的自媒体频道</h2>
+      <p>请输入你想为频道取的名字，给观众留下独特的第一印象吧！</p>
+      <input type="text" id="channelName" placeholder="你的频道名称" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+      <div class="bottom-btns">
+        <button class="btn" onclick="goToStep2()">下一步</button>
+      </div>
+    </div>
+
+    <!-- 步骤2：选择内容方向 -->
+    <div id="step2" class="message-box hidden">
+      <h2>Step 2：确定主要内容方向</h2>
+      <p>选择你想制作的主要内容类型，这将影响你的受众和成长路径。</p>
+      <button class="btn option-btn" onclick="chooseContentType('vlog')">Vlog - 记录日常生活</button>
+      <button class="btn option-btn" onclick="chooseContentType('comedy')">搞笑短视频</button>
+      <button class="btn option-btn" onclick="chooseContentType('edu')">学习/科普教程</button>
+      <button class="btn option-btn" onclick="chooseContentType('game')">游戏解说/直播</button>
+      <button class="btn option-btn" onclick="chooseContentType('music')">音乐翻唱/原创</button>
+    </div>
+
+    <!-- 步骤3：拍摄环境选择 -->
+    <div id="step3" class="message-box hidden">
+      <h2>Step 3：选择拍摄/创作环境</h2>
+      <p>你的创作环境同样会影响视频质量和受众观感：</p>
+      <button class="btn option-btn" onclick="chooseEnvironment('室内专业布景')">室内专业布景</button>
+      <button class="btn option-btn" onclick="chooseEnvironment('户外街头')">户外街头</button>
+      <button class="btn option-btn" onclick="chooseEnvironment('宿舍/卧室')">宿舍/卧室</button>
+      <button class="btn option-btn" onclick="chooseEnvironment('临时搭建的小工作室')">临时搭建的小工作室</button>
+    </div>
+
+    <!-- 步骤4：创作方式选择 -->
+    <div id="step4" class="message-box hidden">
+      <h2>Step 4：你将如何创作？</h2>
+      <p>决定你的创作方式，也会影响到观众对内容的感知。</p>
+      <button class="btn option-btn" onclick="chooseMethod('精心剪辑')">精心剪辑</button>
+      <button class="btn option-btn" onclick="chooseMethod('快速产出')">快速产出</button>
+      <button class="btn option-btn" onclick="chooseMethod('真人出镜')">真人出镜</button>
+      <button class="btn option-btn" onclick="chooseMethod('多人合作')">多人合作</button>
+    </div>
+
+    <!-- 步骤5：编辑风格选择 -->
+    <div id="step5" class="message-box hidden">
+      <h2>Step 5：编辑与包装风格</h2>
+      <p>你想在后期编辑中突出哪些方面？</p>
+      <button class="btn option-btn" onclick="chooseEditing('炫酷转场 + 特效')">炫酷转场 + 特效</button>
+      <button class="btn option-btn" onclick="chooseEditing('简约风 + 文字字幕')">简约风 + 文字字幕</button>
+      <button class="btn option-btn" onclick="chooseEditing('搞笑配音 + 表情包')">搞笑配音 + 表情包</button>
+      <button class="btn option-btn" onclick="chooseEditing('大量背景音乐蒙太奇')">大量背景音乐蒙太奇</button>
+    </div>
+
+    <!-- 步骤6：平台发布 -->
+    <div id="step6" class="message-box hidden">
+      <h2>Step 6：选择发布平台</h2>
+      <p>在哪个平台首发，可能决定你第一波流量。</p>
+      <button class="btn option-btn" onclick="choosePlatform('B站')">B站</button>
+      <button class="btn option-btn" onclick="choosePlatform('抖音')">抖音</button>
+      <button class="btn option-btn" onclick="choosePlatform('微信视频号')">微信视频号</button>
+      <button class="btn option-btn" onclick="choosePlatform('小红书')">小红书</button>
+    </div>
+
+    <!-- 步骤7：推广方式选择 -->
+    <div id="step7" class="message-box hidden">
+      <h2>Step 7：推广你的作品</h2>
+      <p>你打算怎样让更多人发现你的新视频？</p>
+      <button class="btn option-btn" onclick="choosePromotion('朋友圈和同学分享')">朋友圈和同学分享</button>
+      <button class="btn option-btn" onclick="choosePromotion('花钱投放广告')">花钱投放广告</button>
+      <button class="btn option-btn" onclick="choosePromotion('与其他UP主互推')">与其他UP主互推</button>
+      <button class="btn option-btn" onclick="choosePromotion('放任自然增长')">放任自然增长</button>
+    </div>
+
+    <!-- 步骤8：与观众互动 -->
+    <div id="step8" class="message-box hidden">
+      <h2>Step 8：收获观众反馈</h2>
+      <p>观众来了，你打算如何与他们互动？</p>
+      <button class="btn option-btn" onclick="chooseInteract('积极回复评论')">积极回复评论</button>
+      <button class="btn option-btn" onclick="chooseInteract('只点赞不回复')">只点赞不回复</button>
+      <button class="btn option-btn" onclick="chooseInteract('挑选性回复')">挑选性回复</button>
+      <button class="btn option-btn" onclick="chooseInteract('直接忽视评论')">直接忽视评论</button>
+    </div>
+
+    <!-- 结果 -->
+    <div id="result" class="message-box hidden">
+      <h2>最终结果</h2>
+      <p id="summary"></p>
+      <div class="bottom-btns">
+        <button class="btn" onclick="restartGame()">再来一次</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 记录玩家的所有选择
+    let channelName = "";
+    let contentType = "";
+    let environment = "";
+    let creationMethod = "";
+    let editingStyle = "";
+    let platform = "";
+    let promotion = "";
+    let interaction = "";
+
+    // 五个关键属性
+    let quality = 0;       // 内容质量
+    let fanSupport = 0;    // 粉丝支持
+    let algorithmFavor = 0;// 平台算法偏爱
+    let stress = 0;        // 自我压力
+    let timeCost = 0;      // 时间投入
+
+    // 当前所处步骤
+    let currentStep = 0;   // 0~8
+
+    // 更新进度条
+    function updateProgressBar(step) {
+      let totalSteps = 8; // 一共有8步
+      let percent = (step / totalSteps) * 100;
+      document.getElementById("progress").style.width = percent + "%";
+    }
+
+    // 更新属性展示
+    function updateStatsDisplay() {
+      document.getElementById("statQuality").textContent = quality;
+      document.getElementById("statFan").textContent = fanSupport;
+      document.getElementById("statAlgo").textContent = algorithmFavor;
+      document.getElementById("statStress").textContent = stress;
+      document.getElementById("statTime").textContent = timeCost;
+    }
+
+    // 显示随机事件/反馈
+    function showFeedback(message) {
+      let feedbackEl = document.getElementById("feedbackArea");
+      feedbackEl.textContent = message;
+      feedbackEl.classList.add("active");
+    }
+    // 隐藏随机事件/反馈
+    function hideFeedback() {
+      let feedbackEl = document.getElementById("feedbackArea");
+      feedbackEl.classList.remove("active");
+      feedbackEl.textContent = "";
+    }
+
+    // 触发随机事件
+    function triggerRandomEvent(step) {
+      // 根据不同step来设置一些事件概率或类型
+      let rand = Math.random();
+      let message = "";
+
+      switch(step) {
+        case 1: 
+          // 频道创建后的小概率事件
+          if(rand < 0.3) {
+            message = "有一位路人网友对你的频道名产生了好奇，并提前关注了你！粉丝支持略微提升。";
+            fanSupport += 1;
+          } else if(rand < 0.5) {
+            message = "你翻来覆去纠结频道名称，浪费了不少时间，心情略显焦虑。";
+            stress += 1;
+          }
+          break;
+        case 2:
+          // 选择内容方向的小随机事件
+          if(rand < 0.25) {
+            message = "你偶然发现一个海外热门趋势，决定稍作借鉴。算法偏爱微升！";
+            algorithmFavor += 2;
+          } else if(rand < 0.5) {
+            message = "你看到很多类似的内容都做烂了，担心撞车导致压力上升。";
+            stress += 2;
+          }
+          break;
+        case 3:
+          if(rand < 0.3) {
+            message = "在拍摄地点勘察过程中，遇到了热心群众的帮助，你获得了一点粉丝支持。";
+            fanSupport += 1;
+          } else if(rand < 0.6) {
+            message = "你发现现场有点嘈杂，可能导致视频质量下降，需要额外花时间消除噪音。";
+            timeCost += 2;
+          }
+          break;
+        case 4:
+          if(rand < 0.2) {
+            message = "突发灵感，你想到了一个能大大提高质量的拍摄创意！";
+            quality += 3;
+          } else if(rand < 0.4) {
+            message = "器材出了点小问题，修复耗费额外的时间和精力，略感挫败。";
+            timeCost += 2;
+            stress += 1;
+          }
+          break;
+        case 5:
+          if(rand < 0.25) {
+            message = "你的后期软件突然崩溃，导致进度倒退。你需要再次投入时间。";
+            timeCost += 3;
+            stress += 1;
+          } else if(rand < 0.45) {
+            message = "你在剪辑时加了一个搞笑彩蛋，或许能带来意外惊喜！";
+            quality += 1;
+            fanSupport += 1;
+          }
+          break;
+        case 6:
+          if(rand < 0.3) {
+            message = "平台突然推出新活动，算法对新作者更友好！你的算法偏爱上升。";
+            algorithmFavor += 2;
+          } else if(rand < 0.5) {
+            message = "平台审核标准变严，你需要更加注意内容合规。压力略微增加。";
+            stress += 1;
+          }
+          break;
+        case 7:
+          if(rand < 0.3) {
+            message = "你找的合作伙伴临时放你鸽子？得重新想办法推广。时间成本上升。";
+            timeCost += 2;
+            stress += 1;
+          } else if(rand < 0.6) {
+            message = "在群聊中宣传却被当成广告，被踢出群聊……";
+            stress += 2;
+          }
+          break;
+        case 8:
+          if(rand < 0.3) {
+            message = "某知名大UP看到了你的作品，给你留言，观众大受鼓舞！粉丝支持 +2";
+            fanSupport += 2;
+          } else if(rand < 0.5) {
+            message = "有些评论不太友好，让你心里很不爽，心态略受影响。";
+            stress += 2;
+          }
+          break;
+        default:
+          message = "";
+      }
+
+      if(message) {
+        showFeedback("【随机事件】" + message);
+      } else {
+        hideFeedback();
+      }
+    }
+
+    // 切换步骤
+    function goStep(fromStep, toStep) {
+      document.getElementById("step" + fromStep).classList.add("hidden");
+      document.getElementById("step" + toStep).classList.remove("hidden");
+      currentStep = toStep;
+      updateProgressBar(toStep);
+      updateStatsDisplay();
+      triggerRandomEvent(toStep);
+    }
+
+    // Step 1 -> Step 2
+    function goToStep2() {
+      let nameInput = document.getElementById("channelName");
+      if(!nameInput.value.trim()) {
+        alert("请先输入频道名称！");
+        return;
+      }
+      channelName = nameInput.value.trim();
+
+      // 初始有个小事件：过度思考频道名称，或许增加了一点时间
+      timeCost += 1;
+      goStep(1, 2);
+    }
+
+    // 选择内容方向
+    function chooseContentType(type) {
+      contentType = type;
+      switch(type) {
+        case 'vlog':
+          quality += 2; 
+          fanSupport += 2; 
+          break;
+        case 'comedy':
+          quality += 3;
+          fanSupport += 3;
+          break;
+        case 'edu':
+          quality += 4;
+          algorithmFavor += 2;
+          break;
+        case 'game':
+          fanSupport += 4;
+          timeCost += 2;
+          break;
+        case 'music':
+          quality += 3;
+          fanSupport += 2;
+          break;
+      }
+      goStep(2, 3);
+    }
+
+    // Step3：选择拍摄环境
+    function chooseEnvironment(env) {
+      environment = env;
+      switch(env) {
+        case '室内专业布景':
+          quality += 2;
+          timeCost += 2;
+          break;
+        case '户外街头':
+          fanSupport += 2; //更有街头感、吸睛
+          stress += 1;     //户外拍摄易受干扰
+          break;
+        case '宿舍/卧室':
+          quality += 1; 
+          timeCost += 1; //可能布置环境有限
+          break;
+        case '临时搭建的小工作室':
+          quality += 2;
+          stress += 1;
+          timeCost += 2;
+          break;
+      }
+      goStep(3, 4);
+    }
+
+    // Step4：创作方式
+    function chooseMethod(method) {
+      creationMethod = method;
+      switch(method) {
+        case '精心剪辑':
+          quality += 4;
+          timeCost += 3;
+          break;
+        case '快速产出':
+          timeCost += 1;
+          stress += 1;
+          break;
+        case '真人出镜':
+          quality += 2;
+          fanSupport += 1;
+          timeCost += 2;
+          break;
+        case '多人合作':
+          quality += 3;
+          fanSupport += 2; //更多人参与可能带来更多粉丝
+          stress += 1;     //沟通成本
+          break;
+      }
+      goStep(4, 5);
+    }
+
+    // Step5：编辑风格
+    function chooseEditing(edit) {
+      editingStyle = edit;
+      switch(edit) {
+        case '炫酷转场 + 特效':
+          quality += 3;
+          timeCost += 3;
+          break;
+        case '简约风 + 文字字幕':
+          quality += 2;
+          timeCost += 2;
+          break;
+        case '搞笑配音 + 表情包':
+          fanSupport += 2;
+          quality += 1;
+          timeCost += 2;
+          break;
+        case '大量背景音乐蒙太奇':
+          quality += 2;
+          timeCost += 2;
+          stress += 1; //版权或混音问题可能带来一定压力
+          break;
+      }
+      goStep(5, 6);
+    }
+
+    // Step6：发布平台
+    function choosePlatform(pt) {
+      platform = pt;
+      switch(pt) {
+        case 'B站':
+          fanSupport += 3;
+          algorithmFavor += 2;
+          break;
+        case '抖音':
+          fanSupport += 5;
+          algorithmFavor += 3;
+          break;
+        case '微信视频号':
+          fanSupport += 2;
+          algorithmFavor += 2;
+          break;
+        case '小红书':
+          fanSupport += 3;
+          algorithmFavor += 1;
+          break;
+      }
+      goStep(6, 7);
+    }
+
+    // Step7：推广方式
+    function choosePromotion(pm) {
+      promotion = pm;
+      switch(pm) {
+        case '朋友圈和同学分享':
+          fanSupport += 2; 
+          break;
+        case '花钱投放广告':
+          algorithmFavor += 3;
+          stress += 1; //要花钱可能带来经济压力
+          break;
+        case '与其他UP主互推':
+          fanSupport += 3;
+          timeCost += 2;
+          break;
+        case '放任自然增长':
+          stress += 0;
+          break;
+      }
+      goStep(7, 8);
+    }
+
+    // Step8：观众互动
+    function chooseInteract(act) {
+      interaction = act;
+      switch(act) {
+        case '积极回复评论':
+          fanSupport += 3;
+          timeCost += 2; //需要时间
+          break;
+        case '只点赞不回复':
+          fanSupport += 1;
+          break;
+        case '挑选性回复':
+          fanSupport += 2;
+          timeCost += 1;
+          break;
+        case '直接忽视评论':
+          break;
+      }
+      goStep(8, "result");
+      showResult();
+    }
+
+    function showResult() {
+      // 计算一个总得分
+      // 大致思路：质量加权，粉丝加权，算法偏爱加权，减去一定的压力和时间
+      let finalScore = quality * 3 + fanSupport * 2 + algorithmFavor * 2 - (stress + Math.floor(timeCost / 2));
+      let evaluation = "";
+
+      if(finalScore < 10) {
+        evaluation = "作品似乎没有激起太大水花，还需要努力哦~";
+      } else if(finalScore < 20) {
+        evaluation = "你的小作品获得了一些初步关注，已经迈出了重要的第一步！";
+      } else if(finalScore < 35) {
+        evaluation = "恭喜！你的作品有了不错的人气，观众对于你的内容质量和互动都很认可！";
+      } else {
+        evaluation = "太棒了！你的作品直接爆火，一夜涨粉，未来可期！";
+      }
+
+      let summaryEl = document.getElementById("summary");
+      summaryEl.innerHTML = `
+        <p><strong>频道名称：</strong>${channelName}</p>
+        <p><strong>主要内容方向：</strong>${contentType}</p>
+        <p><strong>拍摄/创作环境：</strong>${environment}</p>
+        <p><strong>创作方式：</strong>${creationMethod}</p>
+        <p><strong>编辑风格：</strong>${editingStyle}</p>
+        <p><strong>发布平台：</strong>${platform}</p>
+        <p><strong>推广方式：</strong>${promotion}</p>
+        <p><strong>观众互动方式：</strong>${interaction}</p>
+        <hr>
+        <p><strong>最终属性统计：</strong><br>
+        内容质量：${quality} / 粉丝支持：${fanSupport} / 算法偏爱：${algorithmFavor} / 压力：${stress} / 时间投入：${timeCost}</p>
+        <p><strong>最终得分：</strong>${finalScore}</p>
+        <p><strong>结论：</strong>${evaluation}</p>
+      `;
+    }
+
+    // 进入结果页
+    function goStep(fromStep, toStep) {
+      document.getElementById("step" + fromStep)?.classList.add("hidden");
+      if(toStep === "result") {
+        document.getElementById("result").classList.remove("hidden");
+      } else {
+        document.getElementById("step" + toStep).classList.remove("hidden");
+        currentStep = toStep;
+        updateProgressBar(toStep);
+        updateStatsDisplay();
+        triggerRandomEvent(toStep);
+      }
+    }
+
+    // 重新开始游戏
+    function restartGame() {
+      // 重置数据
+      channelName = "";
+      contentType = "";
+      environment = "";
+      creationMethod = "";
+      editingStyle = "";
+      platform = "";
+      promotion = "";
+      interaction = "";
+
+      quality = 0;
+      fanSupport = 0;
+      algorithmFavor = 0;
+      stress = 0;
+      timeCost = 0;
+      currentStep = 0;
+
+      hideFeedback();
+      updateProgressBar(0);
+      updateStatsDisplay();
+
+      // 重置界面
+      document.getElementById("channelName").value = "";
+      for(let i=1; i<=8; i++){
+        document.getElementById("step"+i).classList.add("hidden");
+      }
+      document.getElementById("result").classList.add("hidden");
+      
+      // 显示第1步
+      document.getElementById("step1").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
